@@ -1250,7 +1250,54 @@ public function hapus_upload($id)
         return redirect()->to('Home/upload');
     }
 
+    public function hapussemuahasil(){
+
+        $model = new M_siapake;
+        $model->hapusemuadata();
+        return redirect()->to('Home/kalkulator_ukk');
+    }
     
+
+public function aksi_t_hasil()
+{
+        $perhitungan = $this->request->getPost('perhitungan'); // Ambil perhitungan lengkap
+
+        $data = array(
+            'perhitungan' => $perhitungan,
+           
+        );
+
+        $model = new M_siapake();
+        $model->tambah('hasil', $data); // Simpan ke database
+
+        return $this->response->setJSON(['success' => true]);
+    
+}
+
+
+
+
+
+public function kalkulator_ukk()
+	{
+		$model= new M_siapake();
+        $data['yoga'] = $model->tampil('hasil');
+        
+		$where = array('id_setting' => '1');
+		$data['yogi'] = $model->getWhere1('setting', $where)->getRow();
+        $id_user = session()->get('id');
+    $activityLog = [
+        'id_user' => $id_user,
+        'menu' => 'Masuk ke Kalkulator',
+        'time' => date('Y-m-d H:i:s')
+    ];
+    $model->logActivity($activityLog);
+	echo view('header', $data);
+	echo view('menu');
+    echo view('kalkulator_ukk');
+    echo view('footer');
+	}
+
 
 public function user()
 	{

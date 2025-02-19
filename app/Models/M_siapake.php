@@ -7,6 +7,10 @@ use CodeIgniter\Model;
 class M_siapake extends Model
 {
 
+    public function hapusemuadata() {
+        $this->db->table('hasil')->truncate(); // Hapus semua data & reset auto-increment
+    }
+    
     public function tambah($table, $isi)
     {
         return $this->db->table($table)

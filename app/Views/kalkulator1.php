@@ -42,18 +42,28 @@
 
             <!-- Table History -->
             <h3 class="mt-4">History</h3>
-            <table class="table table-bordered mt-3">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Perhitungan</th>
-                        <th>Hasil</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTable">
-                    <!-- Data history akan ditampilkan di sini -->
-                </tbody>
-            </table>
+            <table class="table table-lg">
+    <thead>
+        <tr>
+            <th>NO</th>
+            <th>Username</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <?php
+            $no = 1;
+            foreach ($yoga as $okei) {
+        ?>
+            <tr>
+                <td><?= $no++ ?></td>
+                <td><?= ($okei->perhitungan) ?></td>
+                <td><?= ($okei->tanggal) ?></td>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
+
         </div>
     </div>
 </div>
@@ -126,42 +136,29 @@ function hitung() {
     operator = '';
     updateDisplay();
 
-    // Simpan hasil perhitungan ke dalam history
-    saveToHistory(firstValue, hasil);
+    // Simpan hasil ke database
+    saveToDatabase(hasil);
 }
 
-function saveToHistory(firstValue, hasil) {
-    // Buat string perhitungan yang akan dikirimkan
-    const perhitungan = `${firstValue} ${operator} ${currentInput} = ${hasil}`;
+// Fungsi untuk menyimpan hasil ke database
+function saveToDatabase(hasil) {
+    let formData = new FormData();
+    formData.append('hasil', hasil);
 
-    // Data yang akan dikirimkan ke backend
-    const historyData = {
-        perhitungan: perhitungan, // Perhitungan lengkap
-        hasil: hasil               // Hasil perhitungan
-    };
-
-    // Kirim data ke server menggunakan fetch
-    fetch('home/saveHistory', {
+    fetch('home/aksi_t_hasil', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(historyData) // Mengirimkan data dalam format JSON
+        body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            console.log('History berhasil disimpan');
-            // Panggil fungsi untuk menampilkan history atau sesuatu setelah data disimpan
-            loadHistory(); // Memuat ulang history
+    .then(response => {
+        if (response.ok) {
+            console.log('Hasil berhasil disimpan ke database');
+            return response.text();
         } else {
-            console.log('Terjadi kesalahan saat menyimpan history');
+            console.error('Gagal menyimpan hasil');
         }
     })
     .catch(error => console.error('Error:', error));
 }
-
-
 
 
 
